@@ -1,0 +1,122 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Billing Service API",
+    "version": "1.0.0",
+    "description": "API do Billing Service (orcamentos e pagamentos)."
+  },
+  "servers": [
+    {
+      "url": "/api/v1",
+      "description": "Servidor atual (relativo)"
+    }
+  ],
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "error": {"type": "string"}
+        }
+      },
+      "Quotation": {
+        "type": "object",
+        "properties": {
+          "id": {"type": "integer"},
+          "service_order_id": {"type": "integer"},
+          "total_in_cents": {"type": "integer"},
+          "currency": {"type": "string"},
+          "status": {"type": "string"}
+        }
+      },
+      "QuotationInput": {
+        "type": "object",
+        "required": ["service_order_id", "total_in_cents"],
+        "properties": {
+          "service_order_id": {"type": "integer"},
+          "total_in_cents": {"type": "integer"},
+          "currency": {"type": "string"}
+        }
+      },
+      "Payment": {
+        "type": "object",
+        "properties": {
+          "id": {"type": "integer"},
+          "quotation_id": {"type": "integer"},
+          "provider": {"type": "string"},
+          "provider_payment_id": {"type": "string"},
+          "status": {"type": "string"},
+          "amount_in_cents": {"type": "integer"},
+          "preference_id": {"type": "string"},
+          "init_point": {"type": "string"},
+          "sandbox_init_point": {"type": "string"}
+        }
+      },
+      "PaymentInput": {
+        "type": "object",
+        "required": ["quotation_id", "amount_in_cents"],
+        "properties": {
+          "quotation_id": {"type": "integer"},
+          "amount_in_cents": {"type": "integer"},
+          "payer_email": {"type": "string"},
+          "currency": {"type": "string"}
+        }
+      },
+      "MercadoPagoWebhook": {
+        "type": "object",
+        "properties": {
+          "type": {"type": "string"},
+          "data": {
+            "type": "object",
+            "properties": {
+              "id": {"type": "string"}
+            }
+          }
+        }
+      }
+    }
+  },
+  "paths": {
+    "/health": {
+      "get": {"tags": ["Health"], "responses": {"200": {"description": "OK"}}}
+    },
+    "/ready": {
+      "get": {"tags": ["Health"], "responses": {"200": {"description": "OK"}}}
+    },
+    "/quotations": {
+      "post": {
+        "tags": ["Quotations"],
+        "requestBody": {"required": true, "content": {"application/json": {"schema": {"$ref": "#/components/schemas/QuotationInput"}}}},
+        "responses": {"201": {"description": "Orcamento criado"}}
+      }
+    },
+    "/quotations/{id}": {
+      "get": {
+        "tags": ["Quotations"],
+        "parameters": [{"name": "id", "in": "path", "required": true, "schema": {"type": "integer"}}],
+        "responses": {"200": {"description": "Orcamento", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Quotation"}}}}}
+      }
+    },
+    "/payments": {
+      "post": {
+        "tags": ["Payments"],
+        "requestBody": {"required": true, "content": {"application/json": {"schema": {"$ref": "#/components/schemas/PaymentInput"}}}},
+        "responses": {"201": {"description": "Pagamento criado"}}
+      }
+    },
+    "/payments/{id}": {
+      "get": {
+        "tags": ["Payments"],
+        "parameters": [{"name": "id", "in": "path", "required": true, "schema": {"type": "integer"}}],
+        "responses": {"200": {"description": "Pagamento", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Payment"}}}}}
+      }
+    },
+    "/payments/webhook/mercadopago": {
+      "post": {
+        "tags": ["Payments"],
+        "requestBody": {"required": true, "content": {"application/json": {"schema": {"$ref": "#/components/schemas/MercadoPagoWebhook"}}}},
+        "responses": {"200": {"description": "Webhook processado"}}
+      }
+    }
+  }
+}

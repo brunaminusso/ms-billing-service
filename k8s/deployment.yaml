@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ms-billing-service
+  namespace: tech-challenge
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ms-billing-service
+  template:
+    metadata:
+      labels:
+        app: ms-billing-service
+    spec:
+      containers:
+        - name: ms-billing-service
+          image: ms-billing-service:local
+          ports:
+            - containerPort: 8080
+          env:
+            - name: DB_HOST
+              value: billing-mysql
+            - name: DB_PORT
+              value: "3306"
+            - name: DB_NAME
+              value: billing_service
+            - name: DB_USER
+              value: billing_user
+            - name: DB_PASSWORD
+              value: billing_pass
+            - name: RABBITMQ_HOST
+              value: rabbitmq
+            - name: RABBITMQ_PORT
+              value: "5672"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ms-billing-service
+  namespace: tech-challenge
+spec:
+  selector:
+    app: ms-billing-service
+  ports:
+    - name: http
+      port: 8080
+      targetPort: 8080
+  type: ClusterIP

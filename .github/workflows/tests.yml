@@ -1,0 +1,65 @@
+name: CI
+
+on:
+  push:
+    branches: ["main", "master"]
+  pull_request:
+
+jobs:
+  build-test-quality:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.2"
+          coverage: xdebug
+
+      - name: Install dependencies
+        uses: ramsey/composer-install@v3
+
+      - name: Coding standards
+        run: vendor/bin/phpcs
+
+      - name: Static analysis
+        run: vendor/bin/phpstan
+
+      - name: Tests with coverage
+        run: composer test:coverage
+
+      - name: Coverage gate
+        run: composer coverage:check
+
+      - name: SonarQube scan
+        uses: sonarsource/sonarqube-scan-action@v2
+        env:
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+      - name: Build image
+        run: docker build -t ms-billing-service:local .
+
+  deploy-k8s:
+    runs-on: ubuntu-latest
+    needs: build-test-quality
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Create kind cluster
+        uses: helm/kind-action@v1.10.0
+        with:
+          cluster_name: tech-challenge
+
+      - name: Build image
+        run: docker build -t ms-billing-service:local .
+
+      - name: Load image into kind
+        run: kind load docker-image --name tech-challenge ms-billing-service:local
+
+      - name: Deploy
+        run: kubectl apply -f k8s
