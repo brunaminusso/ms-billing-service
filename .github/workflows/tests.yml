@@ -10,8 +10,8 @@ jobs:
   build-test-quality:
     runs-on: ubuntu-latest
     env:
-      SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL || 'https://sonarcloud.io' }}
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN || secrets.MS_SONAR_TOKEN }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -37,8 +37,16 @@ jobs:
       - name: Coverage gate
         run: composer coverage:check
 
+      - name: Prepare Sonar gate
+        run: |
+          if [ -n "${SONAR_TOKEN:-}" ]; then
+            echo "HAS_SONAR_TOKEN=true" >> "$GITHUB_ENV"
+          else
+            echo "HAS_SONAR_TOKEN=false" >> "$GITHUB_ENV"
+          fi
+
       - name: SonarQube scan
-        if: ${{ env.SONAR_HOST_URL != '' && env.SONAR_TOKEN != '' }}
+        if: ${{ env.HAS_SONAR_TOKEN == 'true' }}
         uses: sonarsource/sonarqube-scan-action@v2
 
       - name: Build image
