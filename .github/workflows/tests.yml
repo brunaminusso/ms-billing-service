@@ -2,8 +2,9 @@ name: CI
 
 on:
   push:
-    branches: ["main", "master"]
+    branches: ["main", "master", "ci/pipeline-fix"]
   pull_request:
+  workflow_dispatch:
 
 jobs:
   build-test-quality:
@@ -34,6 +35,7 @@ jobs:
         run: composer coverage:check
 
       - name: SonarQube scan
+        if: ${{ secrets.SONAR_HOST_URL != '' && secrets.SONAR_TOKEN != '' }}
         uses: sonarsource/sonarqube-scan-action@v2
         env:
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}

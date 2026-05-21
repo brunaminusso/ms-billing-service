@@ -40,4 +40,24 @@ class PaymentEvent
     {
         return $this->id;
     }
+
+    public function getPaymentId(): int
+    {
+        return $this->paymentId;
+    }
+
+    public function getEventType(): string
+    {
+        return $this->eventType;
+    }
+
+    public function getPayload(): array
+    {
+        return $this->payload;
+    }
+
+    public function getCreatedAt(): DateTimeImmutable
+    {
+        return $this->createdAt;
+    }
 }
