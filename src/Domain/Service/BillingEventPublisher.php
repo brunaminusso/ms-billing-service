@@ -9,7 +9,9 @@ use PhpAmqpLib\Message\AMQPMessage;
 
 class BillingEventPublisher
 {
-    public function __construct(private ?AMQPStreamConnection $connection) {}
+    public function __construct(private ?AMQPStreamConnection $connection)
+    {
+    }
 
     public function publishPaymentApproved(array $payload): void
     {

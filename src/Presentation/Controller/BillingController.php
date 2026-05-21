@@ -27,7 +27,8 @@ class BillingController extends BaseController
         private PaymentGatewayInterface $paymentGateway,
         private BillingEventPublisher $eventPublisher,
         private MetricsRegistryInterface $metrics
-    ) {}
+    ) {
+    }
 
     public function createQuotation(Request $request, Response $response): Response
     {

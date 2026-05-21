@@ -10,7 +10,9 @@ use Doctrine\ORM\EntityManagerInterface;
 
 class PaymentEventRepository implements PaymentEventRepositoryInterface
 {
-    public function __construct(private EntityManagerInterface $entityManager) {}
+    public function __construct(private EntityManagerInterface $entityManager)
+    {
+    }
 
     public function save(PaymentEvent $event): void
     {

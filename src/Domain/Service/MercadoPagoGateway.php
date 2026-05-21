@@ -12,7 +12,8 @@ class MercadoPagoGateway implements PaymentGatewayInterface
     public function __construct(
         private MercadoPagoPaymentClientInterface $paymentClient,
         private MercadoPagoPreferenceClientInterface $preferenceClient
-    ) {}
+    ) {
+    }
 
     public function createPreference(array $payload): array
     {
