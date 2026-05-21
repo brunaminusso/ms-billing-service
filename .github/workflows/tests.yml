@@ -9,6 +9,9 @@ on:
 jobs:
   build-test-quality:
     runs-on: ubuntu-latest
+    env:
+      SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -35,11 +38,8 @@ jobs:
         run: composer coverage:check
 
       - name: SonarQube scan
-        if: ${{ secrets.SONAR_HOST_URL != '' && secrets.SONAR_TOKEN != '' }}
+        if: ${{ env.SONAR_HOST_URL != '' && env.SONAR_TOKEN != '' }}
         uses: sonarsource/sonarqube-scan-action@v2
-        env:
-          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
       - name: Build image
         run: docker build -t ms-billing-service:local .
