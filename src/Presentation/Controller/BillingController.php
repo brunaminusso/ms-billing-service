@@ -27,7 +27,8 @@ class BillingController extends BaseController
         private PaymentGatewayInterface $paymentGateway,
         private BillingEventPublisher $eventPublisher,
         private MetricsRegistryInterface $metrics
-    ) {}
+    ) {
+    }
 
     public function createQuotation(Request $request, Response $response): Response
     {
@@ -194,12 +195,15 @@ class BillingController extends BaseController
         $payment = $this->paymentRepository->findByProviderPaymentId((string)$providerPaymentId);
 
         if ($payment) {
-            // Local payment exists; construct a providerData stub to avoid external API call in dev
-            $providerData = [
-                'id' => (string)$providerPaymentId,
-                'external_reference' => (string)$payment->getQuotationId(),
-                'status' => 'approved',
-            ];
+            try {
+                $providerData = $this->paymentGateway->getPayment((string)$providerPaymentId);
+            } catch (\Throwable) {
+                $providerData = [
+                    'id' => (string)$providerPaymentId,
+                    'external_reference' => (string)$payment->getQuotationId(),
+                    'status' => $payment->getStatus(),
+                ];
+            }
         } else {
             $providerData = $this->paymentGateway->getPayment((string)$providerPaymentId);
         }

@@ -2,12 +2,16 @@ name: CI
 
 on:
   push:
-    branches: ["main", "master"]
+    branches: ["main", "master", "ci/pipeline-fix"]
   pull_request:
+  workflow_dispatch:
 
 jobs:
   build-test-quality:
     runs-on: ubuntu-latest
+    env:
+      SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -15,7 +19,7 @@ jobs:
       - name: Set up PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: "8.2"
+          php-version: "8.4"
           coverage: xdebug
 
       - name: Install dependencies
@@ -34,10 +38,8 @@ jobs:
         run: composer coverage:check
 
       - name: SonarQube scan
+        if: ${{ env.SONAR_HOST_URL != '' && env.SONAR_TOKEN != '' }}
         uses: sonarsource/sonarqube-scan-action@v2
-        env:
-          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
       - name: Build image
         run: docker build -t ms-billing-service:local .
@@ -62,4 +64,17 @@ jobs:
         run: kind load docker-image --name tech-challenge ms-billing-service:local
 
       - name: Deploy
-        run: kubectl apply -f k8s
+        run: |
+          set -euo pipefail
+          kubectl apply -f k8s/namespace.yaml || true
+
+          echo "Waiting for namespace 'tech-challenge' to become Active"
+          for i in $(seq 1 60); do
+            phase=$(kubectl get ns tech-challenge -o jsonpath='{.status.phase}' 2>/dev/null || echo "")
+            if [ "$phase" = "Active" ]; then
+              break
+            fi
+            sleep 1
+          done
+
+          kubectl apply --server-side -f k8s --recursive

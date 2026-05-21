@@ -9,6 +9,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use RuntimeException;
 use Slim\Routing\RouteContext;
 
 class HttpMetricsMiddleware implements MiddlewareInterface
@@ -28,8 +29,12 @@ class HttpMetricsMiddleware implements MiddlewareInterface
         $response = $handler->handle($request);
         $duration = microtime(true) - $start;
 
-        $route = RouteContext::fromRequest($request)->getRoute();
-        $pattern = $route ? $route->getPattern() : $path;
+        try {
+            $route = RouteContext::fromRequest($request)->getRoute();
+            $pattern = $route ? $route->getPattern() : $path;
+        } catch (RuntimeException) {
+            $pattern = $path;
+        }
         $status = $response->getStatusCode();
 
         $this->metrics->observeHttpRequest($request->getMethod(), $pattern, $status, $duration);
