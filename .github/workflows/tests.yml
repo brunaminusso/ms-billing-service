@@ -62,4 +62,17 @@ jobs:
         run: kind load docker-image --name tech-challenge ms-billing-service:local
 
       - name: Deploy
-        run: kubectl apply -f k8s
+        run: |
+          set -euo pipefail
+          kubectl apply -f k8s/namespace.yaml || true
+
+          echo "Waiting for namespace 'tech-challenge' to become Active"
+          for i in $(seq 1 60); do
+            phase=$(kubectl get ns tech-challenge -o jsonpath='{.status.phase}' 2>/dev/null || echo "")
+            if [ "$phase" = "Active" ]; then
+              break
+            fi
+            sleep 1
+          done
+
+          kubectl apply --server-side -f k8s --recursive

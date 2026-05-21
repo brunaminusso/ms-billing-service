@@ -27,7 +27,11 @@ class BillingEventPublisherTest extends TestCase
 
         $channel->expects($this->once())
             ->method('basic_publish')
-            ->with($this->isInstanceOf(\PhpAmqpLib\Message\AMQPMessage::class), 'billing.events', 'billing.payment.approved');
+            ->with(
+                $this->isInstanceOf(\PhpAmqpLib\Message\AMQPMessage::class),
+                'billing.events',
+                'billing.payment.approved'
+            );
 
         $channel->expects($this->once())
             ->method('close');
@@ -51,7 +55,11 @@ class BillingEventPublisherTest extends TestCase
 
         $channel->expects($this->once())
             ->method('basic_publish')
-            ->with($this->isInstanceOf(\PhpAmqpLib\Message\AMQPMessage::class), 'billing.events', 'billing.payment.failed');
+            ->with(
+                $this->isInstanceOf(\PhpAmqpLib\Message\AMQPMessage::class),
+                'billing.events',
+                'billing.payment.failed'
+            );
 
         $channel->expects($this->once())
             ->method('close');

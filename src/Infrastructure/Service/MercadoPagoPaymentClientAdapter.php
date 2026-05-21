@@ -13,7 +13,9 @@ use MercadoPago\Resources\Preference;
 use MercadoPago\Resources\Payment;
 use RuntimeException;
 
-final class MercadoPagoPaymentClientAdapter implements MercadoPagoPaymentClientInterface, MercadoPagoPreferenceClientInterface
+final class MercadoPagoPaymentClientAdapter implements
+    MercadoPagoPaymentClientInterface,
+    MercadoPagoPreferenceClientInterface
 {
     private PaymentClient $client;
     private PreferenceClient $preferenceClient;

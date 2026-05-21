@@ -40,8 +40,12 @@ class Payment
     #[ORM\Column(type: 'datetime_immutable')]
     private DateTimeImmutable $updatedAt;
 
-    public function __construct(int $quotationId, int $amountInCents, string $provider = 'mercadopago', string $currency = 'BRL')
-    {
+    public function __construct(
+        int $quotationId,
+        int $amountInCents,
+        string $provider = 'mercadopago',
+        string $currency = 'BRL'
+    ) {
         $this->quotationId = $quotationId;
         $this->amountInCents = $amountInCents;
         $this->provider = $provider;
