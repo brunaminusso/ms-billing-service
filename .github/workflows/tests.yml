@@ -12,6 +12,7 @@ jobs:
     env:
       SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL || 'https://sonarcloud.io' }}
       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN || secrets.MS_SONAR_TOKEN }}
+      SONAR_ORGANIZATION: ${{ secrets.SONAR_ORGANIZATION || secrets.MS_SONAR_ORGANIZATION || github.repository_owner }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -48,6 +49,9 @@ jobs:
       - name: SonarQube scan
         if: ${{ env.HAS_SONAR_TOKEN == 'true' }}
         uses: sonarsource/sonarqube-scan-action@v2
+        with:
+          args: >
+            -Dsonar.organization=${{ env.SONAR_ORGANIZATION }}
 
       - name: Build image
         run: docker build -t ms-billing-service:local .
