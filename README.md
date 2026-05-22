@@ -1,6 +1,6 @@
 # Billing Service
 
-[![Coverage](https://img.shields.io/github/actions/workflow/status/brunaminusso/tech-challenge/tests.yml?branch=main&label=coverage)](https://github.com/brunaminusso/tech-challenge/actions/workflows/tests.yml)
+[![Coverage](https://img.shields.io/github/actions/workflow/status/brunaminusso/ms-billing-service/tests.yml?branch=main&label=coverage)](https://github.com/brunaminusso/ms-billing-service/actions/workflows/tests.yml)
 
 Serviço responsável por orçamentos e pagamentos das ordens de serviço.
 
@@ -147,6 +147,13 @@ composer migrate
 
 - Workflow: https://github.com/brunaminusso/tech-challenge/actions/workflows/tests.yml
 - Gate: `composer coverage:check`
+
+## CI / Sonar
+
+- O workflow de CI executa build, testes, análise estática e um scan SonarQube opcional.
+- Para habilitar o Sonar no CI, defina os secrets do repositório: `SONAR_HOST_URL`, `MS_SONAR_TOKEN` e, se necessário, `SONAR_ORGANIZATION`.
+- O workflow só executa o step do Sonar quando `MS_SONAR_TOKEN` estiver presente.
+- Se preferir, use `scripts/set-sonar-secrets.sh` na raiz para gravar o token com o nome padrão do workflow.
 
 ## Teste BDD
 
