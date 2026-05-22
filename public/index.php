@@ -16,19 +16,19 @@ error_reporting(E_ALL & ~E_DEPRECATED & ~E_USER_DEPRECATED);
 ini_set('display_errors', '0');
 
 set_error_handler(function (int $severity): bool {
-	return in_array($severity, [E_DEPRECATED, E_USER_DEPRECATED], true);
+    return in_array($severity, [E_DEPRECATED, E_USER_DEPRECATED], true);
 });
 
 if (file_exists(__DIR__ . '/../.env')) {
-	$dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/..');
-	$dotenv->safeLoad();
+    $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/..');
+    $dotenv->safeLoad();
 }
 
 // Instantiate PHP-DI ContainerBuilder
 $containerBuilder = new ContainerBuilder();
 
 if (false) { // Should be set to true in production
-	$containerBuilder->enableCompilation(__DIR__ . '/../var/cache');
+    $containerBuilder->enableCompilation(__DIR__ . '/../var/cache');
 }
 
 // Set up settings
@@ -89,7 +89,7 @@ $errorMiddleware = $app->addErrorMiddleware($displayErrorDetails, $logError, $lo
 $errorMiddleware->setDefaultErrorHandler($errorHandler);
 
 set_error_handler(function (int $severity): bool {
-	return in_array($severity, [E_DEPRECATED, E_USER_DEPRECATED], true);
+    return in_array($severity, [E_DEPRECATED, E_USER_DEPRECATED], true);
 });
 
 // Run App & Emit Response
