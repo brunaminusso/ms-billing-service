@@ -48,13 +48,10 @@ jobs:
             echo "HAS_MS_SONAR_TOKEN=false" >> "$GITHUB_ENV"
           fi
 
-<<<<<<< HEAD
       - name: Ensure full git history
         if: ${{ env.HAS_MS_SONAR_TOKEN == 'true' }}
         run: git fetch --prune --unshallow || true
 
-=======
->>>>>>> origin/main
       - name: SonarQube scan
         if: ${{ env.HAS_MS_SONAR_TOKEN == 'true' }}
         uses: sonarsource/sonarqube-scan-action@v2
