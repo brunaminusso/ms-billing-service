@@ -54,6 +54,14 @@ jobs:
             echo "HAS_MS_SONAR_TOKEN=false" >> "$GITHUB_ENV"
           fi
 
+      - name: Prepare Sonar gate
+        run: |
+          if [ -n "${MS_SONAR_TOKEN:-}" ]; then
+            echo "HAS_MS_SONAR_TOKEN=true" >> "$GITHUB_ENV"
+          else
+            echo "HAS_MS_SONAR_TOKEN=false" >> "$GITHUB_ENV"
+          fi
+
       - name: SonarQube scan
         if: ${{ env.HAS_MS_SONAR_TOKEN == 'true' }}
         uses: sonarsource/sonarqube-scan-action@v2
