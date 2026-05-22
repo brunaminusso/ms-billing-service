@@ -151,8 +151,9 @@ composer migrate
 ## CI / Sonar
 
 - O workflow de CI executa build, testes, análise estática e um scan SonarQube opcional.
-- Para habilitar o Sonar no CI, defina os secrets do repositório: `SONAR_HOST_URL`, `SONAR_TOKEN` e, se necessário, `SONAR_ORGANIZATION`.
-- O workflow só executa o step do Sonar quando ambos os secrets estiverem presentes.
+- Para habilitar o Sonar no CI, defina os secrets do repositório: `SONAR_HOST_URL`, `MS_SONAR_TOKEN` e, se necessário, `SONAR_ORGANIZATION`.
+- O workflow só executa o step do Sonar quando `MS_SONAR_TOKEN` estiver presente.
+- Se preferir, use `scripts/set-sonar-secrets.sh` na raiz para gravar o token com o nome padrão do workflow.
 
 ## Teste BDD
 
