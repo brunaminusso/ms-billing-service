@@ -53,6 +53,7 @@ jobs:
           args: >
             -Dsonar.organization=${{ env.SONAR_ORGANIZATION }}
             -Dsonar.token=${{ env.MS_SONAR_TOKEN }}
+            -Dsonar.php.coverage.reportPaths=build/coverage.xml
 
       - name: Build image
         run: docker build -t ms-billing-service:local .
