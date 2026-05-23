@@ -145,19 +145,33 @@ composer migrate
 
 ## Evidencias de cobertura
 
-- Workflow: https://github.com/brunaminusso/tech-challenge/actions/workflows/tests.yml
-- Gate: `composer coverage:check`
+- Workflow: https://github.com/brunaminusso/ms-billing-service/actions/workflows/tests.yml
+- Artefato de cobertura publicado no CI: `build/coverage.xml`
+- Verificacao local opcional: `composer coverage:check`
 
 ## CI / Sonar
 
 - O workflow de CI executa build, testes, análise estática e um scan SonarQube opcional.
 - Para habilitar o Sonar no CI, defina os secrets do repositório: `SONAR_HOST_URL`, `MS_SONAR_TOKEN` e, se necessário, `SONAR_ORGANIZATION`.
 - O workflow só executa o step do Sonar quando `MS_SONAR_TOKEN` estiver presente.
-- Se preferir, use `scripts/set-sonar-secrets.sh` na raiz para gravar o token com o nome padrão do workflow.
+- O gate principal de cobertura fica centralizado no Sonar; `composer coverage:check` pode ser usado localmente como validacao adicional.
 
 ## Teste BDD
 
-- Webhook Mercado Pago: [tests/Presentation/BillingControllerBddTest.php](ms-billing-service/tests/Presentation/BillingControllerBddTest.php)
+- Webhook Mercado Pago: [tests/Presentation/BillingControllerBddTest.php](tests/Presentation/BillingControllerBddTest.php)
+
+## Saga Pattern (orquestrada)
+
+Neste desenho, o Billing Service participa da saga coordenada pelo OS Service:
+
+1) Recebe a solicitacao para gerar o orcamento da ordem de servico.
+2) Registra o pagamento e confirma a aprovacao via evento `billing.payment.approved`.
+3) Em caso de falha operacional, devolve erro ao orquestrador para acionar compensacao.
+
+Compensacoes sob responsabilidade do dominio de Billing:
+- pagamento recusado ou expirado;
+- reembolso solicitado pelo orquestrador quando a execucao nao puder iniciar;
+- registro do estado final para auditoria do fluxo financeiro.
 
 ## Eventos (RabbitMQ)
 
