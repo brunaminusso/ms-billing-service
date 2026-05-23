@@ -35,8 +35,24 @@ jobs:
       - name: Tests with coverage
         run: composer test:coverage
 
-      - name: Coverage gate
-        run: composer coverage:check
+      # Coverage gate removed to centralize coverage checks in Sonar
+      # (Was) - name: Coverage gate
+      #         run: composer coverage:check
+
+      - name: Upload coverage artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-xml
+          path: build/coverage.xml
+
+      - name: Prepare Sonar gate
+        run: |
+          if [ -n "${MS_SONAR_TOKEN:-}" ]; then
+            echo "HAS_MS_SONAR_TOKEN=true" >> "$GITHUB_ENV"
+          else
+            echo "HAS_MS_SONAR_TOKEN=false" >> "$GITHUB_ENV"
+          fi
 
       - name: Prepare Sonar gate
         run: |
