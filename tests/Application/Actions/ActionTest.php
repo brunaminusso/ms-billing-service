@@ -9,6 +9,8 @@ use App\Application\Actions\ActionPayload;
 use DateTimeImmutable;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Log\LoggerInterface;
+use Slim\Exception\HttpBadRequestException;
+use Slim\Psr7\Response as SlimResponse;
 use Tests\TestCase;
 
 class ActionTest extends TestCase
@@ -75,5 +77,38 @@ class ActionTest extends TestCase
         $response = $app->handle($request);
 
         $this->assertEquals(202, $response->getStatusCode());
+    }
+
+    public function testActionReturnsParsedBodyFromRequest(): void
+    {
+        $logger = $this->createMock(LoggerInterface::class);
+        $action = new TestableAction($logger, static fn (): Response => new SlimResponse());
+        $request = $this->createRequest('POST', '/test-action');
+        $request = $request->withParsedBody(['foo' => 'bar']);
+
+        $action($request, new SlimResponse(), []);
+
+        $this->assertSame(['foo' => 'bar'], $action->fetchFormData());
+    }
+
+    public function testActionResolvesArgumentWhenPresent(): void
+    {
+        $logger = $this->createMock(LoggerInterface::class);
+        $action = new TestableAction($logger, static fn (): Response => new SlimResponse());
+
+        $action($this->createRequest('GET', '/test-action'), new SlimResponse(), ['id' => 15]);
+
+        $this->assertSame(15, $action->fetchArg('id'));
+    }
+
+    public function testActionThrowsBadRequestWhenArgumentIsMissing(): void
+    {
+        $logger = $this->createMock(LoggerInterface::class);
+        $action = new TestableAction($logger, static fn (): Response => new SlimResponse());
+
+        $action($this->createRequest('GET', '/test-action'), new SlimResponse(), []);
+
+        $this->expectException(HttpBadRequestException::class);
+        $action->fetchArg('id');
     }
 }
