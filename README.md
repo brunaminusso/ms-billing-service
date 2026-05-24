@@ -1,6 +1,6 @@
 # Billing Service
 
-[![Coverage](https://img.shields.io/github/actions/workflow/status/brunaminusso/ms-billing-service/tests.yml?branch=main&label=coverage)](https://github.com/brunaminusso/ms-billing-service/actions/workflows/tests.yml)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=ms-billing-service&metric=coverage)](https://sonarcloud.io/dashboard?id=ms-billing-service)
 
 Serviço responsável por orçamentos e pagamentos das ordens de serviço.
 
@@ -151,6 +151,7 @@ composer migrate
 
 ## CI / Sonar
 
+- Painel Sonar: https://sonarcloud.io/dashboard?id=ms-billing-service
 - O workflow de CI executa build, testes, análise estática e um scan SonarQube opcional.
 - Para habilitar o Sonar no CI, defina os secrets do repositório: `SONAR_HOST_URL`, `MS_SONAR_TOKEN` e, se necessário, `SONAR_ORGANIZATION`.
 - O workflow só executa o step do Sonar quando `MS_SONAR_TOKEN` estiver presente.
