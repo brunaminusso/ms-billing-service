@@ -34,7 +34,7 @@
         "php-amqplib/php-amqplib": "^3.7",
         "php-di/php-di": "^7.0",
         "slim/psr7": "^1.5",
-        "slim/slim": "^4.10",
+        "slim/slim": "^4.15",
         "symfony/cache": "^7.3",
         "vlucas/phpdotenv": "^5.5"
     },
